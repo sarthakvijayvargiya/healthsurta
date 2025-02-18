@@ -1,9 +1,10 @@
+import Login from "./pages/login"
 
 function App() {
 
   return (
     <>
-     <div>App</div>
+    <Login/>
     </>
   )
 }
