@@ -1,12 +1,19 @@
-import Login from "./pages/login"
+import { useAdminContext } from "./context/admin-context";
+import Login from "./pages/login";
+import { ToastContainer } from "react-toastify";
 
 function App() {
-
-  return (
+  const { aToken } = useAdminContext();
+  return aToken ? (
     <>
-    <Login/>
+      <ToastContainer />
     </>
-  )
+  ) : (
+    <>
+      <Login />
+      <ToastContainer />
+    </>
+  );
 }
 
-export default App
+export default App;
