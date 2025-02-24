@@ -10,14 +10,13 @@ export const AdminContextProvider = ({ children }) => {
   );
   const [doctors, setDoctors] = useState([]);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  
 
   const getAllDoctors = async () => {
     try {
-      const  {data}  = await axios.post(
+      const { data } = await axios.post(
         backendUrl + "/api/admin/get-all-doctors",
         {},
-        { headers: {aToken} }
+        { headers: { aToken } }
       );
       if (data.success) {
         setDoctors(data.doctors);
@@ -30,11 +29,32 @@ export const AdminContextProvider = ({ children }) => {
     }
   };
 
+  const changeAvailablity = async (docId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/admin//change-availability",
+        { docId },
+        { headers: { aToken } }
+      );
+
+      if(data.success){
+        toast.success(data.message);
+        getAllDoctors();
+      }else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const value = {
     aToken,
     setAToken,
     backendUrl,
-    getAllDoctors,doctors
+    getAllDoctors,
+    doctors,
+    changeAvailablity
   };
 
   return (
