@@ -39,20 +39,29 @@ const Adddoctor = () => {
         JSON.stringify({ line1: address1, line2: address2 })
       );
 
-      const {data} = await axios.post(
+      const { data } = await axios.post(
         backendUrl + `/api/admin/add-doctor`,
         formData,
-        { headers: {aToken} }
+        { headers: { aToken } }
       );
-      console.log(data)
-      if(data.success){
-        toast.success(data.message)
-      }else{
+      console.log(data);
+      if (data.success) {
+        toast.success(data.message);
+        setDocImg(false);
+        setName("");
+        setPassword("");
+        setEmail("");
+        setAddress1("");
+        setAddress2("");
+        setDegree("");
+        setAbout("");
+        setFees("");
+      } else {
         toast.error(data.message);
       }
-
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
   return (
