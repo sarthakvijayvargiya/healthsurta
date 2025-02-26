@@ -7,7 +7,7 @@ const NavBar = () => {
   const [showMenu, setShowMenu] = useState(false);
   // if token present use is logged in
   // const [token, setToken] = useState(true);
-  const {token,setToken} = useAppContext();
+  const {token,setToken,userData} = useAppContext();
 
   const logout = ()=>{
     setToken(false)
@@ -42,11 +42,11 @@ const NavBar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-4">
-        {token ? (
+        {token && userData ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
             <img
               className="w-8 rounded-full"
-              src={assets.profile_pic}
+              src={userData.image}
               alt="Profile Pic"
             />
             <img
