@@ -1,5 +1,5 @@
 import express from "express"
-import { getProfile, loginUser, registerUser, updateProfile ,bookAppointment} from "../controller/userController.js";
+import { getProfile, loginUser, registerUser, updateProfile ,bookAppointment, listAppointment} from "../controller/userController.js";
 import authUser from "../middleware/authUser.js";
 import upload from "../middleware/multer.js";
 
@@ -13,5 +13,6 @@ userRoute.get("/get-profile",authUser,getProfile)
 userRoute.post("/update-profile", upload.single('image') ,authUser,updateProfile)
 // TODO Check this api flow to understand
 userRoute.post('/book-appointment',authUser,bookAppointment);
+userRoute.get('/appointments',authUser,listAppointment);
 
 export default userRoute; 
