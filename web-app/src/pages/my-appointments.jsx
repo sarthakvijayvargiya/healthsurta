@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const MyAppointment = () => {
 
-  const {backendUrl ,token} = useAppContext();
+  const {backendUrl ,token,getDoctorsData} = useAppContext();
 
   const [appointments,setAppointments] = useState([]);
 
@@ -29,6 +29,24 @@ const MyAppointment = () => {
     }
   }
 
+  const cancelAppointment = async(appointmentId)=>{
+    try {
+
+      const {data} = await axios.post(backendUrl+"/api/user/cancel-appointment",{appointmentId},{headers:{token}});
+
+      if(data.success){
+        toast.success(data.message)
+        getUserAppointments();
+        getDoctorsData();
+      }else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      
+    }
+  }
   useEffect(()=>{
     if(token){
       getUserAppointments();
@@ -56,8 +74,9 @@ const MyAppointment = () => {
               </div>
               <div></div>
               <div className="flex flex-col gap-2 justify-end">
-                <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>
-                <button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">Cancel Appointment</button>
+              {!doctor.cancelled &&<button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>}
+                {!doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">Cancel Appointment</button>}
+                {doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm  text-center sm:min-w-48 py-2 border rounded border-red-500 text-red-500">Appointment Cancelled</button>}
               </div>
             </div>
           ))
