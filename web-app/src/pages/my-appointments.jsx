@@ -47,6 +47,41 @@ const MyAppointment = () => {
       
     }
   }
+
+  const initPay = (order) =>{
+    const options = {
+      key : import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount : order.amount,
+      currency : order.currency,
+      name:'Appointment Payment',
+      description : 'Appointment Payment',
+      order_id :order.id,
+      receipt : order.receipt,
+      handler : async(resp)=>{
+                  console.log(resp);
+                }
+    }
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+    
+  }
+
+  const appointmentRazorpay = async(appointmentId)=>{
+    try {
+      const {data} = await axios.post(backendUrl+'/api/user/payment-razorpay',{appointmentId},{headers:{token}})
+      console.log(data)
+      if(data.success){
+        console.log(data)
+        initPay(data.order);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  }
+
   useEffect(()=>{
     if(token){
       getUserAppointments();
@@ -59,7 +94,7 @@ const MyAppointment = () => {
       <p className="pb-3 mt-12 font-medium text-zinc-700 border-b">My Appointments</p>
       <div>
         {appointments &&
-          appointments.slice(0,3).map((doctor,index)=>(
+          appointments.map((doctor,index)=>(
             <div className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b" key={index}>
               <div>
                 <img className="w-32 bg-indigo-50" src={doctor.docData.image} alt="doctors image" />
@@ -74,7 +109,7 @@ const MyAppointment = () => {
               </div>
               <div></div>
               <div className="flex flex-col gap-2 justify-end">
-              {!doctor.cancelled &&<button className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>}
+              {!doctor.cancelled &&<button onClick={()=>appointmentRazorpay(doctor._id)}  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>}
                 {!doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">Cancel Appointment</button>}
                 {doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm  text-center sm:min-w-48 py-2 border rounded border-red-500 text-red-500">Appointment Cancelled</button>}
               </div>
