@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import {useNavigate} from 'react-router-dom'
 const MyAppointment = () => {
 
   const {backendUrl ,token,getDoctorsData} = useAppContext();
 
   const [appointments,setAppointments] = useState([]);
-
+  const navigate = useNavigate();
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   const slotDateFormat = (slotDate)=>{
@@ -59,6 +59,16 @@ const MyAppointment = () => {
       receipt : order.receipt,
       handler : async(resp)=>{
                   console.log(resp);
+                  try {
+                    const {data} = await axios.post(backendUrl+'/api/user/verify',resp,{headers:{token}});
+                    if(data.success){
+                      getUserAppointments();
+                      navigate('/my-appointments');
+                    }
+                  } catch (error) {
+                    console.log(error);
+                    toast.error(error.message);
+                  }
                 }
     }
 
@@ -109,7 +119,8 @@ const MyAppointment = () => {
               </div>
               <div></div>
               <div className="flex flex-col gap-2 justify-end">
-              {!doctor.cancelled &&<button onClick={()=>appointmentRazorpay(doctor._id)}  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>}
+              {!doctor.cancelled && doctor.payment && <button className="sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50">Paid</button>}
+              {!doctor.cancelled && !doctor.payment && <button onClick={()=>appointmentRazorpay(doctor._id)}  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-300">Pay Online</button>}
                 {!doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300">Cancel Appointment</button>}
                 {doctor.cancelled && <button onClick={()=>cancelAppointment(doctor._id)} className="text-sm  text-center sm:min-w-48 py-2 border rounded border-red-500 text-red-500">Appointment Cancelled</button>}
               </div>
