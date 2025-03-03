@@ -241,16 +241,23 @@ const paymentRazorpay = async (req, res) => {
         message: "Appointment Cancelled or not found",
       });
     }
+    // Creating options for razorpay payment
+    const amountInPaise = (appointmentData.amount || 0) * 100; // Convert amount to paise
+    if (amountInPaise < 100) {
+      return res.json({
+        success: false,
+        message: "Amount should be greater than or equal to ₹1",
+      });
+    }
 
     // creating options for razorpay payment
     const options = {
-      amount: appointmentData.amount,
+      amount: amountInPaise,
       currency: process.env.CURRENCY,
       receipt: appointmentId,
     };
 
-    const order = await razorpayInstance.orders.create(options);
-
+    const order =await razorpayInstance.orders.create(options);
     res.json({ success: true, order });
   } catch (error) {
     console.log(error);
