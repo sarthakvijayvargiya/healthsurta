@@ -55,6 +55,7 @@ export const AdminContextProvider = ({ children }) => {
 
       if(data.success){
         setAppointments(data.appointments);
+        console.log(data.appointments)
       }else{
         toast.error(data.message);
       }
